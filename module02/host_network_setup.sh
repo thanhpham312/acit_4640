@@ -1,0 +1,1 @@
+vbmg () { VBoxManage.exe "$@"; }
