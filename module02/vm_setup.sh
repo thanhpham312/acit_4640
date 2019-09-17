@@ -14,6 +14,8 @@ vbmg createvm \
 SED_PROGRAM="/^Config file:/ { s/^.*:\s\+\(\S\+\)/\1/; s|\\\\|/|gp }"
 VBOX_FILE=$(vbmg showvminfo "$VM_NAME" | sed -ne "$SED_PROGRAM")
 VM_DIR=$(dirname "$VBOX_FILE")
+VM_STORAGE_CTL_NAME="${VM_NAME}_STORAGE_CLT"
+VM_VDI_PATH="${VM_DIR}/${VM_NAME}.vdi"
 
 vbmg modifyvm $VM_NAME \
 --cpus 1 \
@@ -23,22 +25,22 @@ vbmg modifyvm $VM_NAME \
 --cableconnected1 on \
 --audio none \
 
-vbmg storagectl $VM_NAME --name "VM_ACIT4640" --add sata
+vbmg storagectl $VM_NAME --name $VM_STORAGE_CTL_NAME --add sata
 
 vbmg storageattach $VM_NAME \
---storagectl VM_ACIT4640 \
+--storagectl "${VM_STORAGE_CTL_NAME}" \
 --port 0 \
 --type dvddrive \
 --medium D:/CentOS-7-x86_64-Minimal-1810.iso
 
 vbmg createmedium \
---filename "${VM_DIR}/${VM_NAME}.vdi" \
+--filename "${VM_VDI_PATH}" \
 --size 10240 \
 --format VDI \
 --variant Standard
 
 vbmg storageattach $VM_NAME \
---storagectl VM_ACIT4640 \
+--storagectl $VM_STORAGE_CTL_NAME \
 --port 1 \
 --type hdd \
---medium "${VM_DIR}/${VM_NAME}.vdi"
+--medium "${VM_VDI_PATH}"
