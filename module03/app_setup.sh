@@ -1,3 +1,5 @@
+#!bin/bash -x
+
 # Add user:
 useradd -p $(openssl passwd -1 P@ssw0rd) admin
 usermod -aG wheel admin
@@ -28,29 +30,30 @@ sed -r -i 's/SELINUX=(enforcing|disabled)/SELINUX=permissive/' /etc/selinux/conf
 useradd -m -r todo-app && passwd -l todo-app
 yum install -y nodejs npm
 yum install -y mongodb-server
+systemctl enable mongod && systemctl start mongod
 
 # Application:
-sudo -u todo-app -i sh -c "
+su - todo-app bash -c "
+cd todo-app;
 mkdir app;
 git clone https://github.com/timoguic/ACIT4640-todo-app.git app;
 cd app;
-npm install;"
+npm install;
+"
+
 /bin/cp -rf Files/database.js /home/todo-app/app/config
+chmown todo-app:todo-app -R /home/todo-app/app/config/database.js
 chmod -R 755 /home/todo-app/
 
 # NGINX
 yum install -y nginx
-
+systemctl enable nginx && systemctl start nginx
 /bin/cp -rf Files/nginx.conf /etc/nginx/
 nginx -s reload
 
 # NodeJS as a Deamon:
 /bin/cp -rf Files/todoapp.service /lib/systemd/system
 systemctl daemon-reload
-
-# Enable services:
-systemctl enable mongod && systemctl start mongod
-systemctl enable nginx && systemctl start nginx
 systemctl enable todoapp && systemctl start todoapp
 
 
