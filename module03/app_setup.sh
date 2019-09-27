@@ -40,7 +40,7 @@ yum install -y mongodb-server
 systemctl enable mongod && systemctl start mongod
 
 # Application:
-sudo -H -u todo-app -i bash -c "
+sudo -H -u todo-app sh -c "
 mkdir app;
 git clone https://github.com/timoguic/ACIT4640-todo-app.git app;
 cd app;
