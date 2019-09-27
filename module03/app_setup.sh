@@ -23,6 +23,7 @@ firewall-cmd --zone=public --add-service=ssh
 firewall-cmd --runtime-to-permanent
 
 # Linux SE:
+setenforce 0
 sed -r -i 's/SELINUX=(enforcing|disabled)/SELINUX=permissive/' /etc/selinux/config
 
 # Web Service:
