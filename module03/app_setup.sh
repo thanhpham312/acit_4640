@@ -7,16 +7,9 @@ yum install -y epel-release vim git tcpdump curl net-tools bzip2
 yum update -y
 
 # Set up ssh:
-mkdir -p ~admin/.ssh/authorized_keys
-/bin/cp -rf acit_admin_id_rsa.pub ~admin/.ssh/authorized_keys/
-# wget https://acit4640.y.vu/docs/module02/resources/acit_admin_id_rsa.pub -P ~admin/.ssh/authorized_keys/
-
-chown admin: ~admin/.ssh/
-chmod u+r: ~admin/.ssh/
-chown admin: ~admin/.ssh/authorized_keys/
-chmod u+r: ~admin/.ssh/authorized_keys/
-chown admin: ~admin/.ssh/authorized_keys/acit_admin_id_rsa.pub
-chmod u+r: ~admin/.ssh/authorized_keys/acit_admin_id_rsa.pub
+mkdir /home/admin/.ssh/
+/bin/cp -rf acit_admin_id_rsa.pub /home/admin/.ssh/authorized_keys
+chown admin:admin -R /home/admin/.ssh/
 
 sed -r -i 's/^(%wheel\s+ALL=\(ALL\)\s+)(ALL)$/\1NOPASSWD: ALL/' /etc/sudoers
 
@@ -44,7 +37,7 @@ git clone https://github.com/timoguic/ACIT4640-todo-app.git app;
 cd app;
 npm install;"
 /bin/cp -rf Files/database.js /home/todo-app/app/config
-chmod -R 755 /home/todo-app/app/
+chmod -R 755 /home/todo-app/
 
 # NGINX
 yum install -y nginx
