@@ -33,12 +33,13 @@ yum install -y mongodb-server
 systemctl enable mongod && systemctl start mongod
 
 # Application:
-su - todo-app bash -c "
-mkdir app;
+su - todo-app
+mkdir app
 git clone https://github.com/timoguic/ACIT4640-todo-app.git app;
-cd app;
-npm install;
-"
+cd app
+npm install
+
+exit
 
 /bin/cp -rf Files/database.js /home/todo-app/app/config
 chmown todo-app:todo-app -R /home/todo-app/app/config/database.js
@@ -64,4 +65,4 @@ systemctl enable todoapp && systemctl start todoapp
 # cd /media/cdrom && sh VBoxLinuxAdditions.run
 # cd /root && umount /media/cdrom
 
-# reboot -h now
+reboot -h now
