@@ -46,12 +46,13 @@ git clone https://github.com/timoguic/ACIT4640-todo-app.git app;
 cd app;
 npm install;"
 /bin/cp -rf Files/database.js /home/todo-app/app/config
-nginx -s reload
+chmod -R 755 /home/todo-app/app/
 
 # NGINX
 yum install -y nginx
 systemctl enable nginx && systemctl start nginx
 /bin/cp -rf Files/nginx.conf /etc/nginx/
+nginx -s reload
 
 # NodeJS as a Deamon:
 /bin/cp -rf Files/todoapp.service /lib/systemd/system
