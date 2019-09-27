@@ -1,10 +1,8 @@
 # Add user:
-adduser admin
-passwd P@ssw0rd
-usermod -aG wheel username
+useradd -p $(openssl passwd -1 P@ssw0rd) admin
+usermod -aG wheel admin
 
 # Install additional programs:
-yum install -y wget
 yum install -y epel-release vim git tcpdump curl net-tools bzip2
 yum update -y
 
@@ -40,7 +38,7 @@ yum install -y mongodb-server
 systemctl enable mongod && systemctl start mongod
 
 # Application:
-sudo -H -u todo-app sh -c "
+sudo -u todo-app -i sh -c "
 mkdir app;
 git clone https://github.com/timoguic/ACIT4640-todo-app.git app;
 cd app;
