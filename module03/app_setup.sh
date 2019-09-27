@@ -34,7 +34,6 @@ systemctl enable mongod && systemctl start mongod
 
 # Application:
 su - todo-app bash -c "
-cd todo-app;
 mkdir app;
 git clone https://github.com/timoguic/ACIT4640-todo-app.git app;
 cd app;
