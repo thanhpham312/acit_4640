@@ -24,6 +24,10 @@ vbmg natnetwork modify \
 --netname net_4640 \
 --port-forward-4 "https:tcp:[]:50443:[192.168.250.10]:443"
 
+vbmg natnetwork modify \
+--netname net_4640 \
+--port-forward-4 "https:tcp:[]:50222:[192.168.250.200]:22"
+
 # Virtual Machine Creation
 VM_NAME="VM_ACIT4640"
 
@@ -48,6 +52,8 @@ vbmg modifyvm $VM_NAME \
 --nat-network1 net_4640 \
 --cableconnected1 on \
 --audio none \
+--boot1 disk \
+--boot2 net
 
 vbmg storagectl $VM_NAME --name $VM_STORAGE_CTL_NAME --add sata
 
@@ -68,4 +74,25 @@ vbmg storageattach $VM_NAME \
 --port 1 \
 --type hdd \
 --medium "${VM_VDI_PATH}"
+
+vbmg startvm PXE_4640
+
+while /bin/true; do
+        ssh -p 50222 -o ConnectTimeout=2s -o StrictHostKeyChecking=no -o IdentityFile=~/.shh/acit_admin_id_rsa -q admin@localhost exit
+        if [ $? -ne 0 ]; then
+                echo "PXE server is not up, sleeping..."
+                sleep 2s
+        else
+                break
+        fi
+done
+
+sleep 15s
+
+vbmg startvm $VM_NAME
+
+scp -r Files admin@PXE:/home/admin/
+ssh admin@PXE "sudo mv -r /home/admin/Files /var/www/lighttpd/ ; sudo mv /var/www/lighttpd/Files/ks.cfg /var/www/lighttpd/ks.cfg"
+
+
 
