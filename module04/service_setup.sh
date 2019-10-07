@@ -26,7 +26,7 @@ vbmg natnetwork modify \
 
 vbmg natnetwork modify \
 --netname net_4640 \
---port-forward-4 "https:tcp:[]:50222:[192.168.250.200]:22"
+--port-forward-4 "ssh2:tcp:[]:50222:[192.168.250.200]:22"
 
 # Virtual Machine Creation
 VM_NAME="VM_ACIT4640"
@@ -47,7 +47,7 @@ VM_VDI_PATH="${VM_DIR}/${VM_NAME}.vdi"
 
 vbmg modifyvm $VM_NAME \
 --cpus 1 \
---memory 1024 \
+--memory 2048 \
 --nic1 natnetwork \
 --nat-network1 net_4640 \
 --cableconnected1 on \
@@ -78,7 +78,7 @@ vbmg storageattach $VM_NAME \
 vbmg startvm PXE_4640
 
 while /bin/true; do
-        ssh -p 50222 -o ConnectTimeout=2s -o StrictHostKeyChecking=no -o IdentityFile=~/.shh/acit_admin_id_rsa -q admin@localhost exit
+        ssh -i ~/.ssh/acit_admin_id_rsa -p 50222 -o ConnectTimeout=2s -o StrictHostKeyChecking=no -q admin@localhost exit
         if [ $? -ne 0 ]; then
                 echo "PXE server is not up, sleeping..."
                 sleep 2s
@@ -87,12 +87,9 @@ while /bin/true; do
         fi
 done
 
-sleep 15s
+ssh admin@PXE "sudo rm -rf /var/www/lighttpd/ks.cfg; sudo rm -rf /var/www/lighttpd/Files"
+scp -i ~/.ssh/acit_admin_id_rsa -P 50222 -r Files admin@localhost:/home/admin/
+ssh -i ~/.ssh/acit_admin_id_rsa -p 50222 admin@localhost "sudo mv /home/admin/Files /var/www/lighttpd/ ; sudo mv /var/www/lighttpd/Files/ks.cfg /var/www/lighttpd/ks.cfg"
+ssh -i ~/.ssh/acit_admin_id_rsa -p 50222 admin@localhost "sudo chmod 755 /var/www/lighttpd/ks.cfg"
 
 vbmg startvm $VM_NAME
-
-scp -r Files admin@PXE:/home/admin/
-ssh admin@PXE "sudo mv -r /home/admin/Files /var/www/lighttpd/ ; sudo mv /var/www/lighttpd/Files/ks.cfg /var/www/lighttpd/ks.cfg"
-
-
-
