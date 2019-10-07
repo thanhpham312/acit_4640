@@ -1,5 +1,5 @@
 #!/bin/bash -x
-vbmg () { VBoxManage.exe "$@"; }
+vbmg () { /mnt/c/Program\ Files/Oracle/VirtualBox/VBoxManage.exe "$@"; }
 
 # Nat Network Creation and Configuration
 
@@ -31,6 +31,7 @@ vbmg natnetwork modify \
 # Virtual Machine Creation
 VM_NAME="VM_ACIT4640"
 
+vbmg controlvm $VM_NAME poweroff
 vbmg unregistervm $VM_NAME --delete
 
 vbmg createvm \
@@ -57,11 +58,11 @@ vbmg modifyvm $VM_NAME \
 
 vbmg storagectl $VM_NAME --name $VM_STORAGE_CTL_NAME --add sata
 
-vbmg storageattach $VM_NAME \
---storagectl "${VM_STORAGE_CTL_NAME}" \
---port 0 \
---type dvddrive \
---medium D:/CentOS-7-x86_64-Minimal-1810.iso
+# vbmg storageattach $VM_NAME \
+# --storagectl "${VM_STORAGE_CTL_NAME}" \
+# --port 0 \
+# --type dvddrive \
+# --medium D:/CentOS-7-x86_64-Minimal-1810.iso
 
 vbmg createmedium \
 --filename "${VM_VDI_PATH}" \
@@ -75,10 +76,18 @@ vbmg storageattach $VM_NAME \
 --type hdd \
 --medium "${VM_VDI_PATH}"
 
-vbmg startvm PXE_4640
+chmod 400 Files/acit_admin_id_rsa
+
+# PXE Server Connection:
+
+PXE_NAME="PXE_4640"
+if ! vbmg showvminfo $PXE_NAME | grep -c "running (since"
+    then
+        vbmg startvm $PXE_NAME
+fi
 
 while /bin/true; do
-        ssh -i ~/.ssh/acit_admin_id_rsa -p 50222 -o ConnectTimeout=2s -o StrictHostKeyChecking=no -q admin@localhost exit
+        ssh -i Files/acit_admin_id_rsa -p 50222 -o ConnectTimeout=2s -o StrictHostKeyChecking=no -q admin@localhost exit
         if [ $? -ne 0 ]; then
                 echo "PXE server is not up, sleeping..."
                 sleep 2s
@@ -88,8 +97,8 @@ while /bin/true; do
 done
 
 ssh admin@PXE "sudo rm -rf /var/www/lighttpd/ks.cfg; sudo rm -rf /var/www/lighttpd/Files"
-scp -i ~/.ssh/acit_admin_id_rsa -P 50222 -r Files admin@localhost:/home/admin/
-ssh -i ~/.ssh/acit_admin_id_rsa -p 50222 admin@localhost "sudo mv /home/admin/Files /var/www/lighttpd/ ; sudo mv /var/www/lighttpd/Files/ks.cfg /var/www/lighttpd/ks.cfg"
-ssh -i ~/.ssh/acit_admin_id_rsa -p 50222 admin@localhost "sudo chmod 755 /var/www/lighttpd/ks.cfg"
+scp -i Files/acit_admin_id_rsa -P 50222 -r Files admin@localhost:/home/admin/
+ssh -i Files/acit_admin_id_rsa -p 50222 admin@localhost "sudo mv /home/admin/Files /var/www/lighttpd/ ; sudo mv /var/www/lighttpd/Files/ks.cfg /var/www/lighttpd/ks.cfg"
+ssh -i Files/acit_admin_id_rsa -p 50222 admin@localhost "sudo chmod 755 /var/www/lighttpd/ks.cfg"
 
 vbmg startvm $VM_NAME
