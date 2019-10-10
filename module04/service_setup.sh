@@ -96,7 +96,7 @@ while /bin/true; do
         fi
 done
 
-ssh admin@PXE "sudo rm -rf /var/www/lighttpd/ks.cfg; sudo rm -rf /var/www/lighttpd/Files"
+ssh -i Files/acit_admin_id_rsa -p 50222 admin@localhost "sudo rm -rf /var/www/lighttpd/ks.cfg; sudo rm -rf /var/www/lighttpd/Files"
 scp -i Files/acit_admin_id_rsa -P 50222 -r Files admin@localhost:/home/admin/
 ssh -i Files/acit_admin_id_rsa -p 50222 admin@localhost "sudo mv /home/admin/Files /var/www/lighttpd/ ; sudo mv /var/www/lighttpd/Files/ks.cfg /var/www/lighttpd/ks.cfg"
 ssh -i Files/acit_admin_id_rsa -p 50222 admin@localhost "sudo chmod 755 /var/www/lighttpd/ks.cfg"
