@@ -37,8 +37,7 @@ vbmg unregistervm $VM_NAME --delete
 vbmg createvm \
 --name $VM_NAME \
 --ostype RedHat_64 \
---register \
---basefolder "D:/VirtualBox VMs"
+--register
 
 SED_PROGRAM="/^Config file:/ { s/^.*:\s\+\(\S\+\)/\1/; s|\\\\|/|gp }"
 VBOX_FILE=$(vbmg showvminfo "$VM_NAME" | sed -ne "$SED_PROGRAM")
@@ -98,7 +97,9 @@ done
 
 ssh -i Files/acit_admin_id_rsa -p 50222 admin@localhost "sudo rm -rf /var/www/lighttpd/ks.cfg; sudo rm -rf /var/www/lighttpd/Files"
 scp -i Files/acit_admin_id_rsa -P 50222 -r Files admin@localhost:/home/admin/
-ssh -i Files/acit_admin_id_rsa -p 50222 admin@localhost "sudo mv /home/admin/Files /var/www/lighttpd/ ; sudo mv /var/www/lighttpd/Files/ks.cfg /var/www/lighttpd/ks.cfg"
+ssh -i Files/acit_admin_id_rsa -p 50222 admin@localhost "sudo mv /home/admin/Files /var/www/lighttpd/"
+ssh -i Files/acit_admin_id_rsa -p 50222 admin@localhost "sudo cp -rf /var/www/lighttpd/Files/ks.cfg /var/www/lighttpd/ks.cfg"
+ssh -i Files/acit_admin_id_rsa -p 50222 admin@localhost "sudo cp -rf /var/www/lighttpd/Files/default /var/lib/tftpboot/pxelinux/pxelinux.cfg/default"
 ssh -i Files/acit_admin_id_rsa -p 50222 admin@localhost "sudo chmod 755 /var/www/lighttpd/ks.cfg"
 
 vbmg startvm $VM_NAME
