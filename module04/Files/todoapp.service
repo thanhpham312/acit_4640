@@ -8,9 +8,9 @@ WorkingDirectory=/home/todo-app/app
 Type=simple
 User=todo-app
 ExecStart=/usr/bin/node /home/todo-app/app/server.js
-Restart=always
 StartLimitInterval=3
 StartLimitBurst=0
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
