@@ -38,7 +38,7 @@ vbmg createvm \
 --name $VM_NAME \
 --ostype RedHat_64 \
 --register \
---basefolder None
+--basefolder ""
 
 SED_PROGRAM="/^Config file:/ { s/^.*:\s\+\(\S\+\)/\1/; s|\\\\|/|gp }"
 VBOX_FILE=$(vbmg showvminfo "$VM_NAME" | sed -ne "$SED_PROGRAM")
