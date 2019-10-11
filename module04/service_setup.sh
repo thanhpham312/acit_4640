@@ -37,7 +37,8 @@ vbmg unregistervm $VM_NAME --delete
 vbmg createvm \
 --name $VM_NAME \
 --ostype RedHat_64 \
---register
+--register \
+--basefolder None
 
 SED_PROGRAM="/^Config file:/ { s/^.*:\s\+\(\S\+\)/\1/; s|\\\\|/|gp }"
 VBOX_FILE=$(vbmg showvminfo "$VM_NAME" | sed -ne "$SED_PROGRAM")
@@ -80,6 +81,11 @@ chmod 400 Files/acit_admin_id_rsa
 # PXE Server Connection:
 
 PXE_NAME="PXE_4640"
+
+vbmg modifyvm $PXE_NAME \
+--nic1 natnetwork \
+--nat-network1 net_4640
+
 if ! vbmg showvminfo $PXE_NAME | grep -c "running (since"
     then
         vbmg startvm $PXE_NAME
