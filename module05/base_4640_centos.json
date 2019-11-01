@@ -1,8 +1,8 @@
 {
     "description": "Packer basebox for 4640",
     "variables": {
-        "admin_passwd": "temporary",
-        "root_passwd": "Password",
+        "admin_passwd": "P@ssw0rd",
+        "root_passwd": "P@ssw0rd",
         "admin_user": "admin",
         "initial_admin_passwd": "temporary",
         "authorized_keys": "./files/acit_admin_id_rsa.pub",
