@@ -41,18 +41,18 @@ cd app;
 npm install;
 "
 
-/bin/cp -rf Files/database.js /home/todo-app/app/config
+/bin/cp -rf files/database.js /home/todo-app/app/config
 chmown todo-app:todo-app -R /home/todo-app/app/config/database.js
 chmod -R 755 /home/todo-app/
 
 # NGINX
 yum install -y nginx
 systemctl enable nginx && systemctl start nginx
-/bin/cp -rf Files/nginx.conf /etc/nginx/
+/bin/cp -rf files/nginx.conf /etc/nginx/
 nginx -s reload
 
 # NodeJS as a Deamon:
-/bin/cp -rf Files/todoapp.service /lib/systemd/system
+/bin/cp -rf files/todoapp.service /lib/systemd/system
 systemctl daemon-reload
 systemctl enable todoapp && systemctl start todoapp
 

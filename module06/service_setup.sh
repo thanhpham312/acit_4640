@@ -76,7 +76,7 @@ vbmg storageattach $VM_NAME \
 --type hdd \
 --medium "${VM_VDI_PATH}"
 
-chmod 400 files/acit_admin_id_rsa
+chmod 400 Files/acit_admin_id_rsa
 
 # PXE Server Connection:
 
@@ -92,7 +92,7 @@ if ! vbmg showvminfo $PXE_NAME | grep -c "running (since"
 fi
 
 while /bin/true; do
-        ssh -i files/acit_admin_id_rsa -p 50222 -o ConnectTimeout=2s -o StrictHostKeyChecking=no -q admin@localhost exit
+        ssh -i Files/acit_admin_id_rsa -p 50222 -o ConnectTimeout=2s -o StrictHostKeyChecking=no -q admin@localhost exit
         if [ $? -ne 0 ]; then
                 echo "PXE server is not up, sleeping..."
                 sleep 2s
@@ -101,11 +101,11 @@ while /bin/true; do
         fi
 done
 
-ssh -i files/acit_admin_id_rsa -p 50222 admin@localhost "sudo rm -rf /var/www/lighttpd/ks.cfg; sudo rm -rf /var/www/lighttpd/files"
-scp -i files/acit_admin_id_rsa -P 50222 -r files admin@localhost:/home/admin/
-ssh -i files/acit_admin_id_rsa -p 50222 admin@localhost "sudo mv /home/admin/files /var/www/lighttpd/"
-ssh -i files/acit_admin_id_rsa -p 50222 admin@localhost "sudo cp -rf /var/www/lighttpd/files/ks.cfg /var/www/lighttpd/ks.cfg"
-ssh -i files/acit_admin_id_rsa -p 50222 admin@localhost "sudo cp -rf /var/www/lighttpd/files/default /var/lib/tftpboot/pxelinux/pxelinux.cfg/default"
-ssh -i files/acit_admin_id_rsa -p 50222 admin@localhost "sudo chmod 755 /var/www/lighttpd/ks.cfg"
+ssh -i Files/acit_admin_id_rsa -p 50222 admin@localhost "sudo rm -rf /var/www/lighttpd/ks.cfg; sudo rm -rf /var/www/lighttpd/Files"
+scp -i Files/acit_admin_id_rsa -P 50222 -r Files admin@localhost:/home/admin/
+ssh -i Files/acit_admin_id_rsa -p 50222 admin@localhost "sudo mv /home/admin/Files /var/www/lighttpd/"
+ssh -i Files/acit_admin_id_rsa -p 50222 admin@localhost "sudo cp -rf /var/www/lighttpd/Files/ks.cfg /var/www/lighttpd/ks.cfg"
+ssh -i Files/acit_admin_id_rsa -p 50222 admin@localhost "sudo cp -rf /var/www/lighttpd/Files/default /var/lib/tftpboot/pxelinux/pxelinux.cfg/default"
+ssh -i Files/acit_admin_id_rsa -p 50222 admin@localhost "sudo chmod 755 /var/www/lighttpd/ks.cfg"
 
 vbmg startvm $VM_NAME
