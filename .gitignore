@@ -1,4 +1,7 @@
-module05/isos/CentOS-7-x86_64-Minimal-1908.iso
-module05/isos/shasum.txt
+*.box
+module05/isos/
 module05/output/
 module05/packer_cache/
+module06/isos/
+module06/output/
+module06/packer_cache/
