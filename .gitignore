@@ -1,8 +1,6 @@
 *.box
+*.retry
 .vagrant/
-module05/isos/
-module05/output/
-module05/packer_cache/
-module06/isos/
-module06/output/
-module06/packer_cache/
+isos/
+output/
+packer_cache/
