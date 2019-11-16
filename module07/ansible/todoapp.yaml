@@ -1,0 +1,115 @@
+---
+- name: Configure todoapp
+  hosts: todoapp
+  become: yes
+
+  tasks:
+    - name: Add user
+      user:
+        name: todo-app
+        password: todoapp
+        state: present
+
+    - name: Install nginx
+      yum:
+        name: nginx
+        state: present
+    
+    - name: Install git
+      yum:
+        name: git
+        state: present
+
+    - name: Install npm
+      yum:
+        name: npm
+        state: present
+
+    - name: Install nodejs
+      yum:
+        name: nodejs
+        state: present
+
+    - name: Install mongodb-server
+      yum:
+        name: mongodb-server
+        state: present
+
+    - name: Allow http for firewall
+      firewalld:
+        zone: public
+        service: http
+        permanent: yes
+        state: enabled
+        immediate: yes
+
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+
+    - name: checkout repo
+      git:
+        repo: https://github.com/timoguic/ACIT4640-todo-app.git
+        dest: /home/todo-app/app/
+      become: yes
+      become_user: todo-app
+
+    - name: Install npm
+      command: npm install
+      become: yes
+      become_user: todo-app
+      args:
+        chdir: /home/todo-app/app
+
+    - name: Copy database configuration file
+      become: yes
+      copy:
+        src: ../files/database.js
+        dest: /home/todo-app/app/config/database.js
+        owner: todo-app
+        group: todo-app
+
+    - name: Change app permissions
+      file:
+        path: /home/todo-app
+        state: directory
+        recurse: yes
+        mode: '0755'
+        owner: todo-app
+        group: todo-app
+
+    - name: Copy nginx configuration file
+      copy:
+        src: ../files/nginx.conf
+        dest: /etc/nginx/nginx.conf
+        owner: nginx
+        group: nginx
+
+    - name: Copy todoapp service configuration file
+      copy:
+        src: ../files/todoapp.service
+        dest: /lib/systemd/system
+        owner: nginx
+        group: nginx
+
+    - name: Reload daemons
+      systemd:
+        daemon_reload: yes
+
+    - name: Configure nginx
+      service:
+        name: nginx
+        enabled: yes
+        state: started
+
+    - name: Configure mongod
+      service:
+        name: mongod
+        enabled: yes
+        state: started
+
+    - name: Configure todoapp
+      service:
+        name: todoapp
+        enabled: yes
+        state: started
