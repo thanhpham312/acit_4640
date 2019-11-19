@@ -1,0 +1,46 @@
+---
+  - name: Checkout repo
+    become: yes
+    become_user: todo-app
+    git:
+      repo: '{{ repo_url }}'
+      dest: '{{ app_path }}'
+
+  - name: Install npm
+    command: npm install
+    become: yes
+    become_user: todo-app
+    args:
+      chdir: '{{ app_path }}'
+
+  - name: Change app permissions
+    file:
+      path: '{{ home_path }}'
+      state: directory
+      recurse: yes
+      mode: '0755'
+      owner: todo-app
+      group: todo-app
+
+  - name: Copy database configuration file
+    template:
+      src: '{{ database_template_path }}'
+      dest: '{{ database_destination_path }}'
+      owner: todo-app
+      group: todo-app
+
+  - name: Change database ownership and permissions
+    file:
+      path: '{{ database_destination_path }}'
+      mode: '0755'
+      owner: todo-app
+      group: todo-app
+
+  - name: Change app permissions
+    file:
+      path: '{{ home_path }}'
+      state: directory
+      recurse: yes
+      mode: '0755'
+      owner: todo-app
+      group: todo-app

@@ -1,0 +1,11 @@
+---
+- name: Create user
+  include_tasks: create_user.yml
+- name: Install packages
+  include_tasks: install_packages.yml
+- name: Configure todoapp
+  include_tasks: configure_todoapp.yml
+- name: Configure nginx
+  include_tasks: configure_nginx.yml
+- name: Install services
+  include_tasks: install_services.yml

@@ -1,0 +1,13 @@
+---
+- name: Install and set up SELinux
+  include_role:
+    name: no_selinux
+- name: Install and set up nginx
+  include_role:
+    name: nginx
+- name: Install and set up Node.js
+  include_role:
+    name: nodejs
+- name: Install and set up MongoDB Server
+  include_role:
+    name: mongo_server

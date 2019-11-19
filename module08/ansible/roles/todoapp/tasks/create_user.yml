@@ -1,0 +1,6 @@
+---
+- name: Add user
+  user:
+    name: todo-app
+    password: $6$XBStRtL1Z1j9o$2oKcj44tjEXFTqhQ2BE0Y02zg6XXDi0Cjx3FfQB4Fc/4A2lKWAZpMTR8uEdK9iTHGwGF8RKaHD5/leH835yod/
+    state: present

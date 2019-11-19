@@ -1,0 +1,18 @@
+---
+  - name: Copy nginx configuration file
+    template:
+      src: '{{ nginx_template_path }}'
+      dest: '{{ nginx_destination_path }}'
+
+  - name: Change app permissions
+    file:
+      path: '{{ nginx_destination_path }}'
+      mode: '0744'
+      owner: nginx
+      group: nginx
+
+  - name: Restart nginx
+    service:
+      name: nginx
+      enabled: yes
+      state: restarted

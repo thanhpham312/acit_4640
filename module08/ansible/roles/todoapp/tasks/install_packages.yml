@@ -1,0 +1,10 @@
+---
+  - name: Install git
+    yum:
+      name: git
+      state: present
+
+  - name: Install npm
+    yum:
+      name: npm
+      state: present
