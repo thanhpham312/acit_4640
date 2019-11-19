@@ -47,7 +47,7 @@
       selinux:
         state: disabled
 
-    - name: checkout repo
+    - name: Checkout repo
       git:
         repo: https://github.com/timoguic/ACIT4640-todo-app.git
         dest: /home/todo-app/app/
@@ -62,7 +62,6 @@
         chdir: /home/todo-app/app
 
     - name: Copy database configuration file
-      become: yes
       copy:
         src: ../files/database.js
         dest: /home/todo-app/app/config/database.js
@@ -88,9 +87,7 @@
     - name: Copy todoapp service configuration file
       copy:
         src: ../files/todoapp.service
-        dest: /lib/systemd/system
-        owner: nginx
-        group: nginx
+        dest: /lib/systemd/system/todoapp.service
 
     - name: Reload daemons
       systemd:
