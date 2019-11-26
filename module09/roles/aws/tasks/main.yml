@@ -1,0 +1,4 @@
+- name: Create and configure VPC
+  include_tasks: vpc.yml
+- name: Create and configure EC2
+  include_tasks: ec2.yml
