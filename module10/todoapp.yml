@@ -1,0 +1,41 @@
+---
+  - hosts: localhost
+    connection: local
+    vars:
+      secgroup_ssh_allowed_instructor_cidr: 142.232.0.0/16
+    roles:
+      - role: aws
+        tags:
+        - provision
+        - test
+
+  - hosts: aws_ec2
+    become: yes
+    gather_facts: no
+    roles:
+      - role: app
+        tags:
+        - deployment
+        - test
+
+  - hosts: localhost
+    connection: local
+    vars:
+      secgroup_ssh_allowed_instructor_cidr: 142.232.0.0/16
+    roles:
+      - role: cleanup
+        tags:
+        - cleanup
+        - never
+        - test
+
+  # - hosts: localhost
+  #   connection: local
+  #   vars:
+  #     secgroup_ssh_allowed_instructor_cidr: 142.232.129.99/20
+  #   roles:
+  #     - role: info
+  #       tags:
+  #       - info
+  #       - never
+  #       - test

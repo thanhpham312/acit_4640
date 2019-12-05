@@ -1,0 +1,7 @@
+---
+  - name: Create and Configure VPC
+    include_tasks: vpc.yml
+  - name: Create and Configure EC2
+    include_tasks: ec2.yml
+  - name: Refresh Ansible Inventory
+    meta: refresh_inventory

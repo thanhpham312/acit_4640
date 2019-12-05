@@ -1,0 +1,15 @@
+---
+  - name: SELinux Configuration
+    include_tasks: selinux.yml
+  - name: Epel Release Configuration
+    include_tasks: epel_release.yml
+  - name: Nginx Configuration
+    include_tasks: nginx.yml
+  - name: Node.js Configuration
+    include_tasks: nodejs.yml
+  - name: MongoDB Server Configuration
+    include_tasks: mongo_server.yml
+  - name: Appplication Configuration
+    include_tasks: todoapp.yml
+  - name: Refresh Ansible Inventory
+    meta: refresh_inventory

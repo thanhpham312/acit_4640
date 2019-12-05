@@ -1,0 +1,63 @@
+---
+  - name: Create and Configure Security Group
+    ec2_group:
+      state: present
+      name: '{{ vpc_prefix }}_SecGroup'
+      description: Allow ssh only at BCIT
+      vpc_id: '{{ vpc_data.vpc.id }}'
+      region: '{{ aws_region }}'
+      rules: 
+        - proto: tcp
+          ports: 
+            - 22
+          cidr_ip: '{{ bcit_subnet }}'
+        - proto: tcp
+          ports: 
+            - 22
+          cidr_ip: '{{ secgroup_ssh_allowed_instructor_cidr }}'
+        - proto: tcp
+          ports: 
+            - 80
+          cidr_ip: 0.0.0.0/0
+    register: security_group_data
+
+  - name: Create and Configure EC2 Instance
+    ec2:
+      key_name: 'aws_private_key'
+      instance_type: '{{ ec2_instance_size }}'
+      image: '{{ ec2_ami_id }}'
+      wait: yes
+      wait_timeout: 500
+      exact_count: 1
+      count_tag:
+        Name: '{{ ec2_instance_name }}'
+      region: '{{ aws_region }}'
+      instance_tags:
+        Name: '{{ ec2_instance_name }}'
+      volumes:
+        - device_name: /dev/sda1
+          volume_type: gp2
+          volume_size: '{{ ec2_instance_storage_size }}'
+      vpc_subnet_id: '{{ subnet_data.subnet.id }}'
+      group_id: '{{ security_group_data.group_id }}'
+    register: ec2_instance_data
+
+  - name: Associate Elastic IP with EC2 Instance
+    ec2_eip:
+      device_id: '{{ ec2_instance_data.tagged_instances[0].id }}'
+      region: '{{ aws_region }}'
+      release_on_disassociation: true
+    register: elastic_ip_data
+
+  - name: Wait for ssh Connection
+    wait_for:
+      host: "{{ elastic_ip_data.public_ip }}"
+      port: 22
+      delay: 5
+      connect_timeout: 5
+      timeout: 180
+      state: started
+
+  - name: Output Debug
+    debug:
+      msg: '{{ elastic_ip_data }}'

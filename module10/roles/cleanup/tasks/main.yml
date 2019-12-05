@@ -1,0 +1,54 @@
+---
+  - name: Disassociate Elastic IP from EC2 Instance
+    ec2_eip:
+      state: 'absent'
+      region: '{{ aws_region }}'
+      device_id: '{{ instance_id }}'
+      ip: '{{ public_ip_address }}'
+      release_on_disassociation: true
+
+  - name: Remove EC2 Instance
+    ec2:
+      wait: yes
+      state: 'absent'
+      region: '{{ aws_region }}'
+      instance_ids: '{{ instance_id }}'
+
+  - name: Remove Routing Table
+    ec2_vpc_route_table:
+      vpc_id: '{{ vpc_id }}'
+      region: '{{ aws_region }}'
+      lookup: tag
+      tags:
+        Name: '{{ vpc_prefix }}_rt'
+      state: 'absent'
+      
+  - name: Remove Gateway
+    ec2_vpc_igw:
+      state: 'absent'
+      region: '{{ aws_region }}'
+      vpc_id: '{{ vpc_id }}'
+
+  - name: Remove Subnet
+    ec2_vpc_subnet:
+      state: 'absent'
+      region: '{{ aws_region }}'
+      az: '{{ aws_az }}'
+      cidr: '{{ vpc_subnet_cidr }}'
+      vpc_id: '{{ vpc_id }}'
+
+  - name: Remove Security Group
+    ec2_group:
+      state: 'absent'
+      region: '{{ aws_region }}'
+      group_id: '{{ security_groups[0].group_id }}'
+      vpc_id: '{{ vpc_id }}'
+      tags:
+        Name: '{{ vpc_prefix }}_SecGroup'
+
+  - name : Remove VPC 
+    ec2_vpc_net:
+      region: '{{ aws_region }}'
+      cidr_block: '{{ vpc_cidr }}'
+      name: '{{ vpc_prefix }}_VPC'
+      state: 'absent'

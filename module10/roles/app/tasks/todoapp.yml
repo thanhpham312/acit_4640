@@ -1,0 +1,88 @@
+---
+  - name: Add User
+    user:
+      name: todo-app
+      password: $6$XBStRtL1Z1j9o$2oKcj44tjEXFTqhQ2BE0Y02zg6XXDi0Cjx3FfQB4Fc/4A2lKWAZpMTR8uEdK9iTHGwGF8RKaHD5/leH835yod/
+      state: present
+
+  - name: Install git
+    yum:
+      name: git
+      state: present
+
+  - name: Install npm
+    yum:
+      name: npm
+      state: present
+
+  - name: Checkout Repo
+    become: yes
+    become_user: todo-app
+    git:
+      repo: '{{ repo_url }}'
+      dest: '{{ app_path }}'
+
+  - name: Install npm
+    command: npm install
+    become: yes
+    become_user: todo-app
+    args:
+      chdir: '{{ app_path }}'
+
+  - name: Change App Permissions
+    file:
+      path: '{{ home_path }}'
+      state: directory
+      recurse: yes
+      mode: '0755'
+      owner: todo-app
+      group: todo-app
+
+  - name: Copy Database Configuration File
+    template:
+      src: '{{ database_template_path }}'
+      dest: '{{ database_destination_path }}'
+      owner: todo-app
+      group: todo-app
+
+  - name: Change Database Ownership and Permissions
+    file:
+      path: '{{ database_destination_path }}'
+      mode: '0755'
+      owner: todo-app
+      group: todo-app
+
+  - name: Change app permissions
+    file:
+      path: '{{ home_path }}'
+      state: directory
+      recurse: yes
+      mode: '0755'
+      owner: todo-app
+      group: todo-app
+
+  - name: Copy nginx Configuration File
+    template:
+      src: '{{ nginx_template_path }}'
+      dest: '{{ nginx_destination_path }}'
+
+  - name: Restart nginx
+    service:
+      name: nginx
+      enabled: yes
+      state: restarted
+
+  - name: Copy todoapp Service Configuration File
+    template:
+      src: '{{ todoapp_service_template_path }}'
+      dest: '{{ todoapp_service_destination_path }}'
+
+  - name: Reload daemons
+    systemd:
+      daemon_reload: yes
+
+  - name: Configure todoapp
+    service:
+      name: todoapp
+      enabled: yes
+      state: started
