@@ -7,7 +7,6 @@
       - role: aws
         tags:
         - provision
-        - test
 
   - hosts: aws_ec2
     become: yes
@@ -16,9 +15,8 @@
       - role: app
         tags:
         - deployment
-        - test
 
-  - hosts: localhost
+  - hosts: aws_ec2
     connection: local
     vars:
       secgroup_ssh_allowed_instructor_cidr: 142.232.0.0/16
@@ -27,15 +25,13 @@
         tags:
         - cleanup
         - never
-        - test
 
-  # - hosts: localhost
-  #   connection: local
-  #   vars:
-  #     secgroup_ssh_allowed_instructor_cidr: 142.232.129.99/20
-  #   roles:
-  #     - role: info
-  #       tags:
-  #       - info
-  #       - never
-  #       - test
+  - hosts: localhost
+    connection: local
+    vars:
+      secgroup_ssh_allowed_instructor_cidr: 142.232.129.99/20
+    roles:
+      - role: info
+        tags:
+        - info
+        - never
