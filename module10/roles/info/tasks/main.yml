@@ -1,30 +1,20 @@
 ---
-- name: Get IP Info
-  ipify_facts:
-  register: ip_data
+  - name: Get IP Information of EC2 Instance
+    ipify_facts:
+    register: ip_data
 
-- name: Output Public IP
-  debug:
-    msg: 'EC2 Instance Public IP: {{ ip_data.ansible_facts.ipify_public_ip }}'
+  - name: Output Public IP Address of EC2 Instance
+    debug:
+      msg: '{{ ip_data.ansible_facts.ipify_public_ip }}'
 
-- name: Check nginx Status
-  become: yes
-  command: systemctl status nginx
-  ignore_errors: yes
-  changed_when: false
-  register: nginx_data
+  - name: Gather Services Information of EC2 Instance
+    service_facts:
+    register: servives_data
 
-- name: Output nginx Status
-  debug:
-    msg: '{{ nginx_data }}'
+  - name: Output nginx Status
+    debug:
+      msg: '{{ servives_data.ansible_facts.services["nginx.service"] }}'
 
-- name: Check Application Status
-  become: yes
-  command: systemctl status todoapp
-  ignore_errors: yes
-  changed_when: false
-  register: app_data
-
-- name: Output App Status
-  debug:
-    msg: '{{ app_data }}'
+  - name: Output todoapp Status
+    debug:
+      msg: '{{ servives_data.ansible_facts.services["todoapp.service"] }}'

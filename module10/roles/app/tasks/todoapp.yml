@@ -10,11 +10,6 @@
       name: git
       state: present
 
-  - name: Install npm
-    yum:
-      name: npm
-      state: present
-
   - name: Checkout Repo
     become: yes
     become_user: todo-app
@@ -42,22 +37,6 @@
     template:
       src: '{{ database_template_path }}'
       dest: '{{ database_destination_path }}'
-      owner: todo-app
-      group: todo-app
-
-  - name: Change Database Ownership and Permissions
-    file:
-      path: '{{ database_destination_path }}'
-      mode: '0755'
-      owner: todo-app
-      group: todo-app
-
-  - name: Change app permissions
-    file:
-      path: '{{ home_path }}'
-      state: directory
-      recurse: yes
-      mode: '0755'
       owner: todo-app
       group: todo-app
 
